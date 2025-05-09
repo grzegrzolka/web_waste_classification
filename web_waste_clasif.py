@@ -12,7 +12,7 @@ class Isotopes_in_Waste:
         self.isotope_name = isotope
         self.activity = activity
 
-st.markdown("###### author: :blue[Andrzej Grzegrzłka]" )
+st.markdown("###### author: :blue[Andrzej Grzegrzółka]" )
 st.markdown("###### contact: :blue[andrzej.grzegrzolka@zuop.gov.pl]" )
 
 # title of the app
