@@ -12,11 +12,11 @@ class Isotopes_in_Waste:
         self.isotope_name = isotope
         self.activity = activity
 
-st.markdown("###### author: :blue[Andrzej Grzegrzółka]" )
-st.markdown("###### contact: :blue[andrzej.grzegrzolka@zuop.gov.pl]" )
+
 
 # title of the app
-st.header('Radioactive waste classification')
+#st.header('Radioactive waste classification')
+st.subheader(':blue[Radioactive waste classification according to Polish regulation]')
 
 # dataframe loading
 df = pd.read_csv('Isotope.csv', sep = ";", index_col = 0, 
@@ -25,17 +25,13 @@ df.loc[df['HalfLife'] == "#N/D!", 'HalfLife'] = '0'
 df['HalfLife'] = df['HalfLife'].str.replace(',', '.').astype(float)
 
 # visualize dataframe
-st.write(df)
+# st.write(df)
 
 # input dates
 #start_date = st.date_input("Podaj datę początkową", min_value="1900-01-01", max_value="2300-01-01")
 #end_date = st.date_input("Podaj datę końcową", min_value="1900-01-01", max_value="2300-01-01")
-elapsed_years = st.number_input("Enter the number of years since the waste was generated: ", step=0.5, format="%0.1f")
-#elapsed_years = (end_date - start_date).days/365
-elapsed_months = int(elapsed_years*12)
-mass = st.number_input("Enter the mass of the waste in kg: ", step=0.5, format="%0.1f")
 
-st.divider()
+mass = st.number_input("Enter the mass of the waste in kg: ", step=0.5, format="%0.1f")
 
 isotopes_in_waste = {}
 
@@ -107,12 +103,19 @@ def Subcategory(mass, isotopes_in_waste):
     
     #st.subheader("- sum isotope concentration to exemption:   {}".format(round(sumIsotopeConcentrationToExemption,2)))
     #st.write("- sum isotope concentration to exemption: ",(round(sumIsotopeConcentrationToExemption,2)))
-    st.text("- sum isotope concentration to exemption:  {}".format(round(sumIsotopeConcentrationToExemption,2)))
-    st.text("- after 3 years sum iotope concentration to exemption:  {}".format(round(after3YearsSumIsotopeConcentrationToExemption,2)))
-    st.text("- sum long lived isotopes concentration:  {}".format(longLivedSumIsotopeConcentrationToExemption))   
-    st.text("- sum long lived isotopes concentration to exemption:  {}".format(longLivedSumIsotopeConcentrationToExemption))   
+    #st.text("- sum isotope concentration to exemption:  {}".format(round(sumIsotopeConcentrationToExemption,2)))
+    #st.text("- after 3 years sum isotope concentration to exemption:  {}".format(round(after3YearsSumIsotopeConcentrationToExemption,2)))
+    #st.text("- sum long lived isotopes concentration:  {}".format(longLivedSumIsotopeConcentration))   
+    #st.text("- sum long lived isotopes concentration to exemption:  {}".format(longLivedSumIsotopeConcentrationToExemption))   
+    
+    
 
-    st.divider()
+    st.markdown(f"###### :blue[- sum isotope concentration to exemption: ] {  round(sumIsotopeConcentrationToExemption,2)}")
+    st.markdown(f"###### :blue[- after 3 years sum isotope concentration to exemption: ] {  round(after3YearsSumIsotopeConcentrationToExemption,2)}")
+    st.markdown(f"###### :blue[- sum long lived isotopes concentration: ] { longLivedSumIsotopeConcentration} kBq/kg")
+    st.markdown(f"###### :blue[- sum long lived isotopes concentration to exemption: ] { longLivedSumIsotopeConcentrationToExemption}")
+
+    # st.divider()
 
     if sumIsotopeConcentrationToExemption <= 1:
         return "Exempted"
@@ -151,16 +154,20 @@ SubcategoryOfWaste = Subcategory(mass, st.session_state['isotopes'])
 
 
 
-st.markdown("###### :blue[Category of Waste:]  {}".format(CategoryOfWaste))
-st.markdown("###### :blue[Subcategory of Waste:]  {}".format(SubcategoryOfWaste))
+st.markdown("###### :red[Category of Waste:]  {}".format(CategoryOfWaste))
+st.markdown("###### :red[Subcategory of Waste:]  {}".format(SubcategoryOfWaste))
 
 st.divider()
 
+#elapsed_years = st.number_input("##### :blue[Enter the number of years since the waste was generated: ]", step=0.5, format="%0.1f")
 
+elapsed_years = st.number_input("Enter the number of years since the waste was generated: ", step=0.5, format="%0.1f")
 
+#elapsed_years = (end_date - start_date).days/365
+elapsed_months = int(elapsed_years*12)
 
-
-
+st.markdown("###### :blue[Number of years since waste generation:]  {}".format(elapsed_years))
+st.markdown("###### :blue[Number of months since waste generation:]  {}".format(elapsed_months))
 
 #plotting the activity of isotopes over time
 
@@ -199,16 +206,16 @@ st.pyplot(plt)
 #print dataframe
 #st.write("Data początkowa", start_date )
 #st.write("Data końcowa", end_date )
-st.divider()
+#st.divider()
 
 # st.text: The st.text() function is used for displaying plain text.
 # It's basic and doesn't include any styling, making it useful for simple text elements.
 
 # st.write("Liczba lat od wytworzenia odpadu: ", elapsed_years) # style="font-size: 50px;"
-st.text("Number of years since waste generation:   {}".format(elapsed_years))
-st.text("Number of months since waste generation: {}".format(elapsed_months))
-st.text("Waste weight in kg: {}".format(mass))
 
+#st.text("Waste weight in kg: {}".format(mass))
+
+st.markdown(f"###### :blue[Waste weight in kg:] {  (mass)} kg")
 
 
 
@@ -222,8 +229,12 @@ selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope'] = ''  # colu
 
 
 st.write(selected_isotopes_df )
+st.divider()
+#st.markdown("###### author: :blue[Andrzej Grzegrzółka]" )
+#st.markdown("###### contact: :blue[andrzej.grzegrzolka@zuop.gov.pl]" )
 
-
+st.text("Made by: Andrzej Grzegrzółka")
+st.markdown("contact: :blue[andrzej.grzegrzolka@zuop.gov.pl]" )
 
 # Custom button example
 
