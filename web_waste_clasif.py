@@ -182,7 +182,17 @@ for isotope in st.session_state['isotopes']:
     IsotopeConcentrationToExemption = round(isotope.activity / mass / df.loc[isotope.isotope_name]["ExemptionConcentr"],2)
     after3YearsSumIsotopeConcentrationToExemption = round(isotope.activity * pow(math.e, -(math.log(2) * (3 / halflife))) / mass / df.loc[isotope.isotope_name]["ExemptionConcentr"],2)
 
-    data.append([isotope.isotope_name, halflife, isotope.activity/activity_units_factor, IsotopeConcentrationToExemption, calc_3_year_activity, after3YearsSumIsotopeConcentrationToExemption, calc_activity,])
+    longLived = []
+    longLivedSumIsotopeConcentration = 0
+    longLivedSumIsotopeConcentrationToExemption = 0
+    for my_isotope in st.session_state['isotopes']:
+        if df.loc[my_isotope.isotope_name]["HalfLife"] > 30.2:
+            #print(f"LL_Isotopes: {my_isotope.isotope_name}")
+            longLivedSumIsotopeConcentrationToExemption += round((my_isotope.activity / mass / df.loc[my_isotope.isotope_name]["ExemptionConcentr"]),2)
+            longLivedSumIsotopeConcentration += round(my_isotope.activity / mass,2)
+            #longLived.append(my_isotope)
+
+    data.append([isotope.isotope_name, halflife, isotope.activity/activity_units_factor, IsotopeConcentrationToExemption, calc_3_year_activity, after3YearsSumIsotopeConcentrationToExemption, calc_activity, longLivedSumIsotopeConcentrationToExemption, longLivedSumIsotopeConcentration] )
     
     #create plot
     activities_by_month = []
@@ -219,7 +229,7 @@ st.markdown(f"###### :blue[Waste weight in kg:] {  (mass)} kg")
 
 
 
-selected_isotopes_df = pd.DataFrame(data, columns=['Isotope', 'Halflife', 'Beg Act', 'IsotConcToExempt', 'Act after 3 years', '3IsotConcToExempt', 'Act after...'])
+selected_isotopes_df = pd.DataFrame(data, columns=['Isotope', 'Halflife', 'Beg Act', 'IsotConcToExempt', 'Act after 3 years', 'IsotConcToExempt after3 years', 'Act after...', 'LL_IsotConcToExempt', 'Sum LL_IsotConc [kBq/kg]'])
 
 
 selected_isotopes_df.loc['Total']=selected_isotopes_df.sum(numeric_only=True)   # add 'total' row at the bottom 
