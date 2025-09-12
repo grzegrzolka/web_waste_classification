@@ -181,7 +181,8 @@ for isotope in st.session_state['isotopes']:
     #calculate activity
     halflife = float(df.loc[isotope.isotope_name]["HalfLife"])
     calc_activity = round(isotope.activity/activity_units_factor * pow(math.e, -(math.log(2) * (elapsed_years / halflife))),2)
-    calc_3_year_activity = round(isotope.activity/activity_units_factor * pow(math.e, -(math.log(2) * (3 / halflife))),2)
+    IsotopeConcentration = round(isotope.activity / mass ,2)
+    calc_3_year_activity = round(isotope.activity/activity_units_factor * pow(math.e, -(math.log(2) * (3 / halflife))),3)
 
     IsotopeConcentrationToExemption = round(isotope.activity / mass / df.loc[isotope.isotope_name]["ExemptionConcentr"],2)
     after3YearsSumIsotopeConcentrationToExemption = round(isotope.activity * pow(math.e, -(math.log(2) * (3 / halflife))) / mass / df.loc[isotope.isotope_name]["ExemptionConcentr"],2)
@@ -193,7 +194,9 @@ for isotope in st.session_state['isotopes']:
         longLivedSumIsotopeConcentrationToExemption1 =0
         longLivedSumIsotopeConcentration1 =0
 
-    data.append([isotope.isotope_name, halflife, df.loc[isotope.isotope_name]["ExemptionConcentr"], isotope.activity/activity_units_factor, IsotopeConcentrationToExemption, calc_3_year_activity, after3YearsSumIsotopeConcentrationToExemption, calc_activity, longLivedSumIsotopeConcentrationToExemption1, longLivedSumIsotopeConcentration1] )
+    data.append([isotope.isotope_name, halflife,  df.loc[isotope.isotope_name]["ExemptionConcentr"], isotope.activity/activity_units_factor, IsotopeConcentration,  
+                 IsotopeConcentrationToExemption, calc_3_year_activity, after3YearsSumIsotopeConcentrationToExemption,
+                 calc_activity, longLivedSumIsotopeConcentrationToExemption1, longLivedSumIsotopeConcentration1] )
     
     #create plot
     activities_by_month = []
@@ -230,14 +233,16 @@ st.markdown(f"###### :blue[Waste weight in kg:] {  (mass)} kg")
 
 
 
-selected_isotopes_df = pd.DataFrame(data, columns=['Isotope', 'Halflife', 'ExemptionConcentr', 'Beg Act', 'IsotConcToExempt', 'Act after 3 years', 'IsotConcToExempt after3 years', 'Act after...', 'LL_IsotConcToExempt', 'Sum LL_IsotConc [kBq/kg]'])
+selected_isotopes_df = pd.DataFrame(data, columns=['Isotope', 'Half-life', 'Exemption Isotope Activity concentration [kBq/kg]', 'Beg Act', 'Isotope concentration [kBq/kg]',   
+                                                   'Isotope act concent/Exemption act concent', 'Act after 3 years', 'After 3 years isotope act concent/Exemption act concent', 
+                                                   'Act after...', 'LL_Isotope act concent/Exemption act concent', 'Sum LL_Isotope act concent [kBq/kg]'])
 
 
-selected_isotopes_df.loc['Total']=selected_isotopes_df.sum(numeric_only=True)   # add 'total' row at the bottom 
-selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Halflife'] = ''  # not sum the total value in 'Halflife', column blank
+selected_isotopes_df.loc['Total']=round(selected_isotopes_df.sum(numeric_only=True), 2)   # add 'total' row at the bottom 
+selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Half-life'] = ''  # not sum the total value in 'Halflife', column blank
 selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope'] = ''  # column blank
-selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'ExemptionConcentr'] = ''  # column blank
-
+selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Exemption Isotope Activity concentration [kBq/kg]'] = ''  # column blank
+selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope concentration [kBq/kg]'] = ''  # column blank
 
 
 st.write(selected_isotopes_df.T , column_config= {"_index": st.column_config.Column("",width="content")})  #.T to transpose the dataframe
