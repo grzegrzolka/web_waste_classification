@@ -196,7 +196,7 @@ for isotope in st.session_state['isotopes']:
 
     data.append([isotope.isotope_name, halflife,  df.loc[isotope.isotope_name]["ExemptionConcentr"], isotope.activity/activity_units_factor, IsotopeConcentration,  
                  IsotopeConcentrationToExemption, calc_3_year_activity, after3YearsSumIsotopeConcentrationToExemption,
-                 calc_activity, longLivedSumIsotopeConcentrationToExemption1, longLivedSumIsotopeConcentration1] )
+                longLivedSumIsotopeConcentrationToExemption1, longLivedSumIsotopeConcentration1, calc_activity] )
     
     #create plot
     activities_by_month = []
@@ -235,7 +235,7 @@ st.markdown(f"###### :blue[Waste weight in kg:] {  (mass)} kg")
 
 selected_isotopes_df = pd.DataFrame(data, columns=['Isotope', 'Half-life', 'Exemption Isotope Activity concentration [kBq/kg]', 'Beg Act', 'Isotope concentration [kBq/kg]',   
                                                    'Isotope act concent/Exemption act concent', 'Act after 3 years', 'After 3 years isotope act concent/Exemption act concent', 
-                                                   'Act after...', 'LL_Isotope act concent/Exemption act concent', 'Sum LL_Isotope act concent [kBq/kg]'])
+                                                   'LL_Isotope act concent/Exemption act concent', 'Sum LL_Isotope act concent [kBq/kg]', 'Act after...' ])
 
 
 selected_isotopes_df.loc['Total']=round(selected_isotopes_df.sum(numeric_only=True), 2)   # add 'total' row at the bottom 
