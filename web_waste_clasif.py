@@ -245,7 +245,7 @@ selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Exemption Isotope Acti
 selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope concentration [kBq/kg]'] = ''  # column blank
 
 
-st.write(selected_isotopes_df.T , column_config= {"_index": st.column_config.Column("",width="content")})  #.T to transpose the dataframe
+st.write(selected_isotopes_df.T , column_config= {"_index": st.column_config.Column("",width="None")})  #.T to transpose the dataframe
 st.divider()
 #st.markdown("###### author: :blue[Andrzej Grzegrzółka]" )
 #st.markdown("###### contact: :blue[andrzej.grzegrzolka@zuop.gov.pl]" )
