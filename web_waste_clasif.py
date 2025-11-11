@@ -131,35 +131,11 @@ def Subcategory(mass, isotopes_in_waste):
 CategoryOfWaste = Category(mass, st.session_state['isotopes'])
 SubcategoryOfWaste = Subcategory(mass, st.session_state['isotopes'])
 
-#st.text("Category of Waste: {}".format(CategoryOfWaste))
-#st.text("Subcategory of Waste: {}".format(SubcategoryOfWaste))
-#st.write("Category of Waste: ", CategoryOfWaste)
-#st.write("Subcategory of Waste: ", SubcategoryOfWaste)
-
-
-
-# Another cool feature is that `st.write()` can also handle Markdown text.
-# But if you want more control over the formatting, you can use `st.markdown()`.
-
-# write markdown
-
-
-# markdown_txt = (
-#     "#### Subcategory of Waste: \n"
-#     "#### :red[Subcategory of Waste: ],st.write(, CategoryOfWaste)\n"
-#     "This is a Markdown paragraph.\n"
-# )
-# st.markdown(markdown_txt)
-
-
-
 
 st.markdown("###### :red[Category of Waste:]  {}".format(CategoryOfWaste))
 st.markdown("###### :red[Subcategory of Waste:]  {}".format(SubcategoryOfWaste))
 
 st.divider()
-
-#elapsed_years = st.number_input("##### :blue[Enter the number of years since the waste was generated: ]", step=0.5, format="%0.1f")
 
 elapsed_years = st.number_input("Enter the number of years since the waste was generated: ", step=0.5, format="%0.1f")
 
@@ -176,6 +152,7 @@ activity_units_factor = 1000
 
 sumActivity = 0
 fi = 0
+sum_fi = 0
 fi_conc = 0
 fi_act = 0
 act_conc_limit_mixture = 0
@@ -184,10 +161,6 @@ longLivedSumIsotopeConcentration1 = 0
 longLivedSumIsotopeConcentrationToExemption1 = 0
 for isotope in st.session_state['isotopes']:
     sumActivity += isotope.activity # activity sum all isotopes MBq 
-    
-    fi = isotope.activity / sumActivity # fraction of isotope activity in mixture 
-    fi_conc += fi / df.loc[isotope.isotope_name]["ExemptionConcentr"] # fi / exempted isotope concentration 
-    fi_act += fi / df.loc[isotope.isotope_name]["ExemptionActivity"] # fi / exempted isotope activity
 
     #calculate activity
     halflife = float(df.loc[isotope.isotope_name]["HalfLife"])
@@ -205,11 +178,7 @@ for isotope in st.session_state['isotopes']:
         longLivedSumIsotopeConcentrationToExemption1 =0
         longLivedSumIsotopeConcentration1 =0
 
-    if sumActivity != 0:
-        act_conc_limit_mixture = round(1/fi_conc, 2)
-        act_limit_mixture = round(1/fi_act/1000, 2)
-
-    data.append([isotope.isotope_name, halflife,  df.loc[isotope.isotope_name]["ExemptionConcentr"], isotope.activity/activity_units_factor, IsotopeConcentration,  
+    data.append([isotope.isotope_name, halflife,  df.loc[isotope.isotope_name]["ExemptionActivity"], df.loc[isotope.isotope_name]["ExemptionConcentr"], isotope.activity/activity_units_factor, IsotopeConcentration,  
                  IsotopeConcentrationToExemption, calc_3_year_activity, after3YearsSumIsotopeConcentrationToExemption,
                 longLivedSumIsotopeConcentrationToExemption1, longLivedSumIsotopeConcentration1, calc_activity] )
     
@@ -232,28 +201,22 @@ plt.show()
 #plt.savefig('chart.png') #/Users/andy/Desktop/Programming/Python/JacekIsot/chart.png
 st.pyplot(plt)
 
+for isotope in st.session_state['isotopes']:
+    fi = isotope.activity / sumActivity # fraction of isotope activity in mixture 
+    fi_conc += fi / df.loc[isotope.isotope_name]["ExemptionConcentr"] # fi / exempted isotope concentration 
+    fi_act += fi / df.loc[isotope.isotope_name]["ExemptionActivity"] # fi / exempted isotope activity
+    sum_fi += fi
+    if sumActivity != 0:
 
+        act_conc_limit_mixture = 1 / fi_conc 
+        act_limit_mixture = 1 / fi_act / 1000   
 
-
-
-
-#print dataframe
-#st.write("Data początkowa", start_date )
-#st.write("Data końcowa", end_date )
-#st.divider()
-
-# st.text: The st.text() function is used for displaying plain text.
-# It's basic and doesn't include any styling, making it useful for simple text elements.
-
-# st.write("Liczba lat od wytworzenia odpadu: ", elapsed_years) # style="font-size: 50px;"
-
-#st.text("Waste weight in kg: {}".format(mass))
 
 st.markdown(f"###### :blue[Waste weight in kg:] {  (mass)} kg")
 
 
 
-selected_isotopes_df = pd.DataFrame(data, columns=['Isotope', 'Half-life', 'Exemption Isotope Activity concentration [kBq/kg]', 'Beg Act', 'Isotope concentration [kBq/kg]',   
+selected_isotopes_df = pd.DataFrame(data, columns=['Isotope', 'Half-life', 'Act limit for exempt mat [kBq]','Exemption Isotope Activity concentration [kBq/kg]', 'Beg Act', 'Isotope concentration [kBq/kg]',   
                                                    'Isotope act concent/Exemption act concent', 'Act after 3 years', 'After 3 years isotope act concent/Exemption act concent', 
                                                    'LL_Isotope act concent/Exemption act concent', 'Sum LL_Isotope act concent [kBq/kg]', 'Act after...'])
 
@@ -261,6 +224,7 @@ selected_isotopes_df = pd.DataFrame(data, columns=['Isotope', 'Half-life', 'Exem
 selected_isotopes_df.loc['Total']=round(selected_isotopes_df.sum(numeric_only=True), 2)   # add 'total' row at the bottom 
 selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Half-life'] = ''  # not sum the total value in 'Halflife', column blank
 selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope'] = ''  # column blank
+selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Act limit for exempt mat [kBq]'] = ''  # column blank
 selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Exemption Isotope Activity concentration [kBq/kg]'] = ''  # column blank
 selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope concentration [kBq/kg]'] = ''  # column blank
 
