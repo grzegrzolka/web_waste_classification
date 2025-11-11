@@ -174,10 +174,19 @@ st.markdown("###### :blue[Number of months since waste generation:]  {}".format(
 x = range(elapsed_months)
 activity_units_factor = 1000
 
-
+sumActivity = 0
+fi = 0
+fi_conc = 0
+fi_isot_act_conc = 0
+act_conc_limit_mixture = 0
 longLivedSumIsotopeConcentration1 = 0
 longLivedSumIsotopeConcentrationToExemption1 = 0
 for isotope in st.session_state['isotopes']:
+    sumActivity += isotope.activity # activity sum all isotopes MBq 
+    
+    fi = isotope.activity / sumActivity # fraction of isotope activity in mixture 
+    fi_conc += fi / df.loc[isotope.isotope_name]["ExemptionConcentr"] # fi / exempted isotope concentration 
+
     #calculate activity
     halflife = float(df.loc[isotope.isotope_name]["HalfLife"])
     calc_activity = round(isotope.activity/activity_units_factor * pow(math.e, -(math.log(2) * (elapsed_years / halflife))),2)
@@ -193,6 +202,9 @@ for isotope in st.session_state['isotopes']:
     else:
         longLivedSumIsotopeConcentrationToExemption1 =0
         longLivedSumIsotopeConcentration1 =0
+
+    if sumActivity != 0:
+        act_conc_limit_mixture = round(1 / fi_conc, 2)
 
     data.append([isotope.isotope_name, halflife,  df.loc[isotope.isotope_name]["ExemptionConcentr"], isotope.activity/activity_units_factor, IsotopeConcentration,  
                  IsotopeConcentrationToExemption, calc_3_year_activity, after3YearsSumIsotopeConcentrationToExemption,
@@ -217,6 +229,11 @@ plt.show()
 #plt.savefig('chart.png') #/Users/andy/Desktop/Programming/Python/JacekIsot/chart.png
 st.pyplot(plt)
 
+
+
+
+
+
 #print dataframe
 #st.write("Data początkowa", start_date )
 #st.write("Data końcowa", end_date )
@@ -235,7 +252,7 @@ st.markdown(f"###### :blue[Waste weight in kg:] {  (mass)} kg")
 
 selected_isotopes_df = pd.DataFrame(data, columns=['Isotope', 'Half-life', 'Exemption Isotope Activity concentration [kBq/kg]', 'Beg Act', 'Isotope concentration [kBq/kg]',   
                                                    'Isotope act concent/Exemption act concent', 'Act after 3 years', 'After 3 years isotope act concent/Exemption act concent', 
-                                                   'LL_Isotope act concent/Exemption act concent', 'Sum LL_Isotope act concent [kBq/kg]', 'Act after...' ])
+                                                   'LL_Isotope act concent/Exemption act concent', 'Sum LL_Isotope act concent [kBq/kg]', 'Act after...'])
 
 
 selected_isotopes_df.loc['Total']=round(selected_isotopes_df.sum(numeric_only=True), 2)   # add 'total' row at the bottom 
@@ -244,12 +261,13 @@ selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope'] = ''  # colu
 selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Exemption Isotope Activity concentration [kBq/kg]'] = ''  # column blank
 selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope concentration [kBq/kg]'] = ''  # column blank
 
+#selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope concentration [kBq/kg]'] = ''  # column blank
+
 
 st.write(selected_isotopes_df.T )  #.T to transpose the dataframe
 st.divider()
-#st.markdown("###### author: :blue[Andrzej Grzegrzółka]" )
-#st.markdown("###### contact: :blue[andrzej.grzegrzolka@zuop.gov.pl]" )
-
+st.markdown(f"###### :blue[Activity concentration limit for exempted material for mixture of isotopes [kBq/kg]: ] { act_conc_limit_mixture}")
+st.divider()
 st.text("Made by: Andrzej Grzegrzółka")
 st.markdown("contact: :blue[andrzej.grzegrzolka@zuop.gov.pl]" )
 
