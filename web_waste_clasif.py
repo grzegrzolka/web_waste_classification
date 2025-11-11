@@ -177,8 +177,9 @@ activity_units_factor = 1000
 sumActivity = 0
 fi = 0
 fi_conc = 0
-fi_isot_act_conc = 0
+fi_act = 0
 act_conc_limit_mixture = 0
+act_limit_mixture = 0
 longLivedSumIsotopeConcentration1 = 0
 longLivedSumIsotopeConcentrationToExemption1 = 0
 for isotope in st.session_state['isotopes']:
@@ -186,6 +187,7 @@ for isotope in st.session_state['isotopes']:
     
     fi = isotope.activity / sumActivity # fraction of isotope activity in mixture 
     fi_conc += fi / df.loc[isotope.isotope_name]["ExemptionConcentr"] # fi / exempted isotope concentration 
+    fi_act += fi / df.loc[isotope.isotope_name]["ExemptionActivity"] # fi / exempted isotope activity
 
     #calculate activity
     halflife = float(df.loc[isotope.isotope_name]["HalfLife"])
@@ -204,7 +206,8 @@ for isotope in st.session_state['isotopes']:
         longLivedSumIsotopeConcentration1 =0
 
     if sumActivity != 0:
-        act_conc_limit_mixture = round(1 / fi_conc, 2)
+        act_conc_limit_mixture = round(1/fi_conc, 2)
+        act_limit_mixture = round(1/fi_act/1000, 2)
 
     data.append([isotope.isotope_name, halflife,  df.loc[isotope.isotope_name]["ExemptionConcentr"], isotope.activity/activity_units_factor, IsotopeConcentration,  
                  IsotopeConcentrationToExemption, calc_3_year_activity, after3YearsSumIsotopeConcentrationToExemption,
@@ -267,6 +270,7 @@ selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope concentration 
 st.write(selected_isotopes_df.T )  #.T to transpose the dataframe
 st.divider()
 st.markdown(f"###### :blue[Activity concentration limit for exempted material for mixture of isotopes [kBq/kg]: ] { act_conc_limit_mixture}")
+st.markdown(f"###### :blue[Activity limit for exempted material for mixture of isotopes [kBq]: ] { act_limit_mixture}")
 st.divider()
 st.text("Made by: Andrzej Grzegrzółka")
 st.markdown("contact: :blue[andrzej.grzegrzolka@zuop.gov.pl]" )
