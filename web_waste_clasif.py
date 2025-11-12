@@ -208,8 +208,8 @@ for isotope in st.session_state['isotopes']:
     sum_fi += fi
     if sumActivity != 0:
 
-        act_conc_limit_mixture = 1 / fi_conc 
-        act_limit_mixture = 1 / fi_act / 1000   
+        act_conc_limit_mixture = round(1/fi_conc, 2)  # in kBq/kg
+        act_limit_mixture = round(1/fi_act/1000, 2)  # in MBq   
 
 
 st.markdown(f"###### :blue[Waste weight in kg:] {  (mass)} kg")
