@@ -220,13 +220,10 @@ selected_isotopes_df = pd.DataFrame(data, columns=['Isotope', 'Half-life', 'Acti
                                                    'Isotope act concent / Exemption act concent', 'Act after 3 years', 'After 3 years isotope act concent / Exemption act concent', 
                                                    'LL_Isotope act concent / Exemption act concent', 'Sum LL_Isotope act concent [kBq/kg]', 'Act after...'])
 
-
-selected_isotopes_df.loc['Total']=round(selected_isotopes_df.sum(numeric_only=True), 2)   # add 'total' row at the bottom 
-selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Half-life'] = ''  # not sum the total value in 'Halflife', column blank
-selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope'] = ''  # column blank
-selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Activity limit for exempt mat [kBq]'] = ''  # column blank
-selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Exemption Isotope Activity concentration [kBq/kg]'] = ''  # column blank
-selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope concentration [kBq/kg]'] = ''  # column blank
+selected_isotopes_df.loc['Total'] = round(selected_isotopes_df.sum(numeric_only=True), 2)   # add 'total' row at the bottom
+string_columns = ['Half-life', 'Isotope', 'Activity limit for exempt mat [kBq]', 'Exemption Isotope Activity concentration [kBq/kg]', 'Isotope concentration [kBq/kg]']
+selected_isotopes_df[string_columns] = selected_isotopes_df[string_columns].astype(object)
+selected_isotopes_df.loc[selected_isotopes_df.index[-1], string_columns] = ''  # clear non-numeric columns on total row
 
 #selected_isotopes_df.loc[selected_isotopes_df.index[-1], 'Isotope concentration [kBq/kg]'] = ''  # column blank
 
